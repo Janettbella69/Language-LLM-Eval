@@ -1,0 +1,49 @@
+# 被测模型配置
+# ⚠️ 跑前两件事:
+#   1. 核对各家当前旗舰的准确 model id(下面的 id 是占位,以各平台控制台为准)
+#   2. export 对应的 API key 环境变量
+# 所有国产平台均提供 OpenAI 兼容接口,runner 统一用 openai SDK 调用。
+# enabled: false 的模型会被 runner 跳过。
+
+defaults:
+  temperature: 0.3      # 偏确定性输出,便于归因;所有模型统一
+  max_tokens: 1024
+  n_retries: 3
+
+models:
+  - name: deepseek
+    model: deepseek-chat            # 核对:DeepSeek 当前旗舰
+    base_url: https://api.deepseek.com
+    api_key_env: DEEPSEEK_API_KEY
+    enabled: false
+
+  - name: kimi
+    model: kimi-k2-0711-preview     # 核对:Moonshot 开放平台当前旗舰
+    base_url: https://api.moonshot.cn/v1
+    api_key_env: MOONSHOT_API_KEY
+    enabled: false
+
+  - name: qwen
+    model: qwen-max                 # 核对:阿里云百炼当前旗舰
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    api_key_env: DASHSCOPE_API_KEY
+    enabled: false
+
+  - name: glm
+    model: glm-4.5                  # 核对:智谱开放平台当前旗舰
+    base_url: https://open.bigmodel.cn/api/paas/v4
+    api_key_env: ZHIPU_API_KEY
+    enabled: false
+
+  # ---- 前沿对照组(至少启用 1 个;无 API 则网页版手动采集,存 results/manual/)----
+  - name: gpt
+    model: gpt-5                    # 核对可用版本
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+    enabled: false
+
+  - name: claude
+    model: claude-sonnet-5          # 走 Anthropic 兼容网关时核对 base_url
+    base_url: https://api.anthropic.com/v1/
+    api_key_env: ANTHROPIC_API_KEY
+    enabled: false
