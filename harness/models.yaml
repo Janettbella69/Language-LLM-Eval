@@ -15,35 +15,35 @@ models:
     model: deepseek-chat            # 核对:DeepSeek 当前旗舰
     base_url: https://api.deepseek.com
     api_key_env: DEEPSEEK_API_KEY
-    enabled: false
+    enabled: true
 
   - name: kimi
     model: kimi-k2-0711-preview     # 核对:Moonshot 开放平台当前旗舰
     base_url: https://api.moonshot.cn/v1
     api_key_env: MOONSHOT_API_KEY
-    enabled: false
+    enabled: true
 
   - name: qwen
     model: qwen-max                 # 核对:阿里云百炼当前旗舰
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
     api_key_env: DASHSCOPE_API_KEY
-    enabled: false
+    enabled: true
 
   - name: glm
-    model: glm-4.5                  # 核对:智谱开放平台当前旗舰
+    model: glm-5.2                  # 2026-07-14 平台 /models 实测列表中的最新版
     base_url: https://open.bigmodel.cn/api/paas/v4
     api_key_env: ZHIPU_API_KEY
-    enabled: false
+    enabled: true
 
   # ---- 前沿对照组(至少启用 1 个;无 API 则网页版手动采集,存 results/manual/)----
   - name: gpt
     model: gpt-5                    # 核对可用版本
     base_url: https://api.openai.com/v1
     api_key_env: OPENAI_API_KEY
-    enabled: false
+    enabled: true
 
   - name: claude
     model: claude-sonnet-5          # 走 Anthropic 兼容网关时核对 base_url
     base_url: https://api.anthropic.com/v1/
     api_key_env: ANTHROPIC_API_KEY
-    enabled: false
+    enabled: true

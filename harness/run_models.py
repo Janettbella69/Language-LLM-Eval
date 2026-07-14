@@ -54,10 +54,11 @@ def load_models(only: set[str] | None) -> tuple[list[dict], dict]:
     models = [m for m in cfg["models"] if m.get("enabled")]
     if only:
         models = [m for m in models if m["name"] in only]
-    for m in models:
-        if not os.environ.get(m["api_key_env"]):
-            sys.exit(f"[error] {m['name']} 已启用但环境变量 {m['api_key_env']} 未设置")
-    return models, cfg["defaults"]
+    ready = [m for m in models if os.environ.get(m["api_key_env"])]
+    skipped = [m["name"] for m in models if not os.environ.get(m["api_key_env"])]
+    if skipped:
+        print(f"[skip] 未检测到 key,跳过: {', '.join(skipped)}")
+    return ready, cfg["defaults"]
 
 
 def existing_ids(out_path: Path) -> set[str]:
@@ -93,7 +94,8 @@ def main() -> None:
     print(f"计划: {len(models)} 模型 × {len(cases)} case")
 
     for m in models:
-        client = OpenAI(api_key=os.environ[m["api_key_env"]], base_url=m["base_url"])
+        client = OpenAI(api_key=os.environ[m["api_key_env"]], base_url=m["base_url"],
+                        timeout=60, max_retries=0)
         out_path = OUT_DIR / f"{m['name']}.jsonl"
         done = existing_ids(out_path)
         todo = [c for c in cases if c["id"] not in done]
@@ -109,8 +111,13 @@ def main() -> None:
                         print(f"  [retry {attempt + 1}] {c['id']}: {e} — {wait}s 后重试")
                         time.sleep(wait)
                 else:
-                    print(f"  [FAIL] {c['id']} 重试耗尽,跳过")
-                    continue
+                    print(f"  [FAIL] {c['id']} 重试耗尽,放弃该模型剩余 case(多为型号名过时)")
+                    try:
+                        avail = [x.id for x in client.models.list().data][:20]
+                        print(f"  [hint] {m['name']} 平台当前可用型号: {', '.join(avail)}")
+                    except Exception:
+                        pass
+                    break
                 f.write(json.dumps({
                     "case_id": c["id"], "model": m["name"], "model_id": m["model"],
                     "output": text,
