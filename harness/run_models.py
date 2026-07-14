@@ -25,6 +25,20 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "results" / "outputs"
 
 
+def load_dotenv(path: Path) -> None:
+    """读取项目根 .env;已存在的环境变量优先,不被覆盖。"""
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, _, v = line.partition("=")
+        k, v = k.strip(), v.strip().strip('"').strip("'")
+        if k and v and k not in os.environ:
+            os.environ[k] = v
+
+
 def load_cases(path: Path, include_unreviewed: bool) -> list[dict]:
     cases = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     if not include_unreviewed:
@@ -63,6 +77,7 @@ def call_model(client: OpenAI, model_id: str, prompt: str, defaults: dict) -> st
 
 
 def main() -> None:
+    load_dotenv(ROOT / ".env")
     ap = argparse.ArgumentParser()
     ap.add_argument("--cases", default="cases/seed_cases.jsonl")
     ap.add_argument("--only", help="逗号分隔的模型名,只跑这些")
