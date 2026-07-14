@@ -24,6 +24,10 @@ harness/              运行脚本 + 模型配置
 results/              模型输出、标注结果、报告(数据以实测为准)
 ```
 
+## 与已有开源评测的关系
+
+EuroEval、GermanBenchmark、OMGEval 等测「模型能否用德语完成任务」;本项目测「模型生成的德语本身质量如何」(地道性/语域/文体/变体),被测组聚焦国产旗舰模型,且对 LLM-as-judge 做人工 gold 校准。详见 [docs/eval-design.md](docs/eval-design.md) 第 7 节。
+
 ## 状态
 
 - [x] 评测设计 & 维度框架
